@@ -1,5 +1,6 @@
 import Head from "next/head";
-import Link from "next/link";
+import Header from "./header";
+import Footer from "./footer";
 
 export const siteTitle = "Portfolio";
 
@@ -11,26 +12,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <meta name="description" content="Software Engineer Portfolio" />
         <meta name="og:title" content={siteTitle} />
       </Head>
-      <header>
-        <h1 className="text-5xl font-bold text-red-300 text-center leading-relaxed tracking-wide">
-          Hello, my name is Tommy Ho.
-        </h1>
-        <nav className="flex items-center justify-between font-semibold p-8 m-8 text-center">
-          <Link href="/about">
-            <a>About Me</a>
-          </Link>
-          <Link href="/projects">
-            <a>Projects</a>
-          </Link>
-          <Link href="/links">
-            <a>Links</a>
-          </Link>
-        </nav>
-      </header>
+      <Header />
       <main>{children}</main>
-      <footer className="absolute bottom-0 flex h-24 w-full items-center justify-center border-t border-white">
-        <small>&copy; 2022</small>
-      </footer>
+      <Footer />
     </div>
   );
 }
