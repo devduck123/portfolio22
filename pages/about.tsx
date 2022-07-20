@@ -7,7 +7,16 @@ export default function About() {
       <Head>
         <title>About Me</title>
       </Head>
-      <h2>about me</h2>
+      <section>
+        <ul>
+          <li>
+            Graduated California-Polytechnic Pomona in 2022 with a B.S. in
+            Computer Information Systems
+          </li>
+          <li>Located in the Bay Area</li>
+          <li>Favorite hobbies include basketball, dogs, and nature</li>
+        </ul>
+      </section>
     </Layout>
   );
 }

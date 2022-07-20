@@ -66,6 +66,20 @@ h6 {
   overflow-wrap: break-word;
 }
 
+a {
+  transition: 0.2s ease-in-out;
+}
+
+a:hover {
+  color: #b0bde1;
+  transform: scale(1.16);
+}
+
+.active {
+  color: #b0bde1;
+  transform: scale(1.16);
+}
+
 #root,
 #__next {
   isolation: isolate;
