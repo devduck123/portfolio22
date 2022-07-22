@@ -21,3 +21,10 @@ pnpm create next-app --example with-tailwindcss with-tailwindcss-app
 ```
 
 Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+
+# stuff for me to remember
+
+- resume & cover letter are hosted on s3
+- "projects" data stored here in projects.json
+  - projects page parses JSON out
+  - POST requests to /api/projects -> CI/CD
