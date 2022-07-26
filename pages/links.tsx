@@ -9,7 +9,7 @@ export default function Links() {
       </Head>
 
       <section className="p-2 w-full">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-300 to-indigo-300">
+        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-300 to-indigo-300 tracking-wide">
           Connect with me
         </h1>
         <ul className="list-disc list-outside m-8 text-left text-lg">
@@ -36,7 +36,7 @@ export default function Links() {
         </ul>
       </section>
       <section className="p-2 my-12 w-full">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-300 to-indigo-300">
+        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-300 to-indigo-300 tracking-wide">
           Resume & Cover Letter
         </h1>
         <ul className="list-disc list-outside m-8 text-left text-lg">

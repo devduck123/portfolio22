@@ -26,7 +26,8 @@ Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&ut
 
 # stuff for me to remember
 
+- hosted by Vercel, domain by Google Domains
 - resume & cover letter are hosted on aws s3
-- "projects" data stored here in projects.json
-  - projects page parses JSON out
-  - POST requests to /api/projects -> CI/CD
+- projects data on firestore
+  - POST /api/projects updates firestore
+  

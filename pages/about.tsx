@@ -10,7 +10,7 @@ export default function About() {
         <title>About Me</title>
       </Head>
       <section className="p-2">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-300 to-indigo-300">
+        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-300 to-indigo-300 tracking-wide">
           Information about me
         </h1>
         <ul className="list-disc list-outside m-8 text-left text-lg">
@@ -28,7 +28,7 @@ export default function About() {
         </ul>
       </section>
       <section className="p-2 my-12">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-300 to-indigo-300">
+        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-300 to-indigo-300 tracking-wide">
           My dog, Duck
         </h1>
         <div className="grid place-content-center place-items-center m-8">
