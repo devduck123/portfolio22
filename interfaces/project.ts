@@ -5,3 +5,8 @@ export type Project = {
   technologies: string;
   description: string;
 };
+
+const ErrorNotFound: Error = {
+  name: "ErrorNotFound",
+  message: "error: project not found",
+};

@@ -9,7 +9,7 @@ export default function projectHandler(
     query: { id, name },
     method,
   } = req;
-  
+
   // REVIEW:
   // idk typescript like that loool but...
   // req.query.id : string | string[] | undefined
@@ -64,4 +64,3 @@ function updateProject(
   };
   res.status(200).json(project);
 }
-

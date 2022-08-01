@@ -1,9 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { Project } from "../../interfaces/project";
+import { fsGetProjects, fsAddProject } from "../../utils/projectsdao";
 
-export default function projectsHandler(
+const ErrorAdding: Error = {
+  name: "ErrorAdding",
+  message: "error: could not parse project to add",
+};
+
+export default async function projectsHandler(
   req: NextApiRequest,
-  res: NextApiResponse<Project[] | Project>
+  res: NextApiResponse<Project[] | Project | Error>
 ) {
   const {
     query: { name },
@@ -17,7 +23,7 @@ export default function projectsHandler(
       break;
     case "POST":
       // Update or create data in your database
-      createProject(req, res);
+      addProject(req, res);
       break;
     default:
       res.setHeader("Allow", ["GET", "POST"]);
@@ -26,33 +32,35 @@ export default function projectsHandler(
 }
 
 // these handlers should call projectsdao
-function getProjects(req: NextApiRequest, res: NextApiResponse<Project[]>) {
-  let projects: Project[] = [
-    {
-      id: "1",
-      name: "foo",
-      imageUrl: "someUrl",
-      technologies: "html,css,javascript",
-      description: "some description",
-    },
-    {
-      id: "2",
-      name: "getProjects",
-      imageUrl: "someUrl",
-      technologies: "html,css,javascript",
-      description: "some description",
-    },
-  ];
+async function getProjects(
+  req: NextApiRequest,
+  res: NextApiResponse<Project[]>
+) {
+  let projects = await fsGetProjects();
   res.status(200).json(projects);
 }
 
-function createProject(req: NextApiRequest, res: NextApiResponse<Project>) {
-  let project: Project = {
-    id: "abc",
-    name: "createProject",
-    imageUrl: "someUrl",
-    technologies: "html,css,javascript",
-    description: "some description",
-  };
-  res.status(200).json(project);
+async function addProject(
+  req: NextApiRequest,
+  res: NextApiResponse<Project | Error>
+) {
+  let projectToCreate: Project;
+  try {
+    projectToCreate = req.body;
+  } catch (err: unknown) {
+    res.status(400).json(ErrorAdding);
+    return;
+  }
+
+  let createdProject = await fsAddProject(projectToCreate);
+  if (typeof createdProject === "string") {
+    const ErrorFs: Error = {
+      name: "ErrorFs",
+      message: createdProject,
+    };
+    res.status(500).json(ErrorFs);
+    return;
+  }
+
+  res.status(200).json(createdProject);
 }
