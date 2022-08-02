@@ -34,9 +34,18 @@ export default async function projectsHandler(
 // these handlers should call projectsdao
 async function getProjects(
   req: NextApiRequest,
-  res: NextApiResponse<Project[]>
+  res: NextApiResponse<Project[] | Error>
 ) {
-  let projects = await fsGetProjects();
+  let projects: Project[] | string = await fsGetProjects();
+  if (typeof projects === "string") {
+    const ErrorFs: Error = {
+      name: "ErrorFs",
+      message: projects,
+    };
+    res.status(500).json(ErrorFs);
+    return;
+  }
+
   res.status(200).json(projects);
 }
 
@@ -44,15 +53,17 @@ async function addProject(
   req: NextApiRequest,
   res: NextApiResponse<Project | Error>
 ) {
-  let projectToCreate: Project;
-  try {
-    projectToCreate = req.body;
-  } catch (err: unknown) {
+  let projectToCreate = {} as Project;
+
+  // validate and parse projectToCreate
+  if (!isValid(req.body)) {
     res.status(400).json(ErrorAdding);
     return;
   }
+  Object.assign(projectToCreate, req.body);
 
-  let createdProject = await fsAddProject(projectToCreate);
+  // add the project in fs
+  let createdProject: string | Project = await fsAddProject(projectToCreate);
   if (typeof createdProject === "string") {
     const ErrorFs: Error = {
       name: "ErrorFs",
@@ -63,4 +74,20 @@ async function addProject(
   }
 
   res.status(200).json(createdProject);
+}
+
+function isValid(body: any): boolean {
+  if (
+    !body.id ||
+    !body.name ||
+    !body.technologies ||
+    !body.description ||
+    !body.hasOwnProperty("id") ||
+    !body.hasOwnProperty("name") ||
+    !body.hasOwnProperty("technologies") ||
+    !body.hasOwnProperty("description")
+  ) {
+    return false;
+  }
+  return true;
 }

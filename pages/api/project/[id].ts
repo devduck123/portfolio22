@@ -1,5 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { Project } from "../../../interfaces/project";
+import {
+  fsGetProjectById,
+  fsUpdateProject,
+  fsDeleteProject,
+} from "../../../utils/projectsdao";
 
 export default function projectHandler(
   req: NextApiRequest,
@@ -28,6 +33,9 @@ export default function projectHandler(
       // Update or create data in your database
       updateProject(req, res, id);
       break;
+    case "DELETE":
+      deleteProject(req, res, id);
+      break;
     default:
       res.setHeader("Allow", ["GET", "PUT"]);
       res.status(405).end(`Method ${method} Not Allowed`);
@@ -37,16 +45,11 @@ export default function projectHandler(
 // these handlers should call projectsdao
 function getProjectById(
   req: NextApiRequest,
-  res: NextApiResponse<Project>,
+  res: NextApiResponse<Project | Error>,
   id: string
 ) {
-  let project: Project = {
-    id: id,
-    name: "getProjectById",
-    imageUrl: "someUrl",
-    technologies: "html,css,javascript",
-    description: "some description",
-  };
+  let project: Project | Error;
+  project = fsGetProjectById(id);
   res.status(200).json(project);
 }
 
@@ -58,6 +61,21 @@ function updateProject(
   let project: Project = {
     id: id,
     name: "updateProject",
+    imageUrl: "someUrl",
+    technologies: "html,css,javascript",
+    description: "some description",
+  };
+  res.status(200).json(project);
+}
+
+function deleteProject(
+  req: NextApiRequest,
+  res: NextApiResponse<Project | undefined>,
+  id: string
+) {
+  let project: Project = {
+    id: id,
+    name: "deleteProject",
     imageUrl: "someUrl",
     technologies: "html,css,javascript",
     description: "some description",
