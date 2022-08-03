@@ -31,7 +31,7 @@ export default async function projectsHandler(
   }
 }
 
-// these handlers should call projectsdao
+// handlers call projectsdao -> firestore logic
 async function getProjects(
   req: NextApiRequest,
   res: NextApiResponse<Project[] | Error>
@@ -76,7 +76,7 @@ async function addProject(
   res.status(200).json(createdProject);
 }
 
-function isValid(body: any): boolean {
+export function isValid(body: any): boolean {
   if (
     !body.id ||
     !body.name ||

@@ -1,29 +1,33 @@
 import type { Project } from "../interfaces/project";
 import { app, db } from "./firebaseConfig";
-import { collection, doc, getDocs, addDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  addDoc,
+  setDoc,
+  deleteDoc,
+} from "firebase/firestore";
 
 const projectCollection = collection(db, "projects");
 
 export async function fsGetProjects(): Promise<Project[] | string> {
-  let projects: Project[] = [];
+  let projectsToGet: Project[] = [];
   try {
     const projectDocs = await getDocs(projectCollection);
     projectDocs.forEach((projectDoc) => {
-      let projectData = projectDoc.data();
-      let project: Project = {
-        id: projectData.id,
-        name: projectData.name,
-        imageUrl: projectData.imageUrl,
-        technologies: projectData.technologies,
-        description: projectData.description,
-      };
-      projects.push(project);
+      let projectToGet = {} as Project;
+      if (projectDoc.exists()) {
+        Object.assign(projectToGet, projectDoc.data());
+      }
+      projectsToGet.push(projectToGet);
     });
   } catch (err: unknown) {
     return getErrorMessage(err);
   }
 
-  return projects;
+  return projectsToGet;
 }
 
 export async function fsAddProject(
@@ -39,17 +43,51 @@ export async function fsAddProject(
 }
 
 export async function fsGetProjectById(id: string): Promise<Project | string> {
+  let projectToGet = {} as Project;
   try {
-  } catch (err: unknown) {}
+    const docRef = doc(db, "projects", id);
+    const projectDoc = await getDoc(docRef);
+    if (projectDoc.exists()) {
+      Object.assign(projectToGet, projectDoc.data());
+    }
+  } catch (err: unknown) {
+    return getErrorMessage(err);
+  }
 
-  return "";
+  return projectToGet;
 }
 
-export async function fsUpdateProject(id: string): Promise<string | undefined> {
-  return undefined;
+export async function fsUpdateProject(
+  projectToUpdate: Project,
+  id: string
+): Promise<Project | string> {
+  try {
+    await setDoc(doc(db, "projects", id), projectToUpdate);
+  } catch (err: unknown) {
+    return getErrorMessage(err);
+  }
+
+  return projectToUpdate;
 }
 
-export async function fsDeleteProject(id: string): Promise<string | undefined> {
+export async function fsDeleteProject(
+  id: string
+): Promise<undefined | string | Error> {
+  try {
+    const docRef = doc(db, "projects", id);
+    const projectDoc = await getDoc(docRef);
+    if (!projectDoc.exists()) {
+      const errNotFound = new Error();
+      errNotFound.name = "errNotFound";
+      errNotFound.message = "error: project not found";
+      return errNotFound;
+    }
+
+    await deleteDoc(doc(db, "projects", id));
+  } catch (err: unknown) {
+    return getErrorMessage(err);
+  }
+
   return undefined;
 }
 

@@ -5,10 +5,20 @@ import {
   fsUpdateProject,
   fsDeleteProject,
 } from "../../../utils/projectsdao";
+import { isValid } from "../projects";
+
+const ErrorUpdating: Error = {
+  name: "ErrorUpdating",
+  message: "error: could not parse project to update",
+};
+const ErrorRoute: Error = {
+  name: "ErrorRoute",
+  message: "error: could not recognize route",
+};
 
 export default function projectHandler(
   req: NextApiRequest,
-  res: NextApiResponse<Project | undefined>
+  res: NextApiResponse<Project | Error | undefined>
 ) {
   const {
     query: { id, name },
@@ -20,7 +30,7 @@ export default function projectHandler(
   // req.query.id : string | string[] | undefined
   // i ONLY want it to be a string !!!
   if (id == null || Array.isArray(id)) {
-    res.status(400).json(undefined);
+    res.status(400).json(ErrorRoute);
     return;
   }
 
@@ -37,48 +47,89 @@ export default function projectHandler(
       deleteProject(req, res, id);
       break;
     default:
-      res.setHeader("Allow", ["GET", "PUT"]);
+      res.setHeader("Allow", ["GET", "PUT", "DELETE"]);
       res.status(405).end(`Method ${method} Not Allowed`);
   }
 }
 
-// these handlers should call projectsdao
-function getProjectById(
+// handlers call projectsdao -> firestore logic
+async function getProjectById(
   req: NextApiRequest,
   res: NextApiResponse<Project | Error>,
   id: string
 ) {
-  let project: Project | Error;
-  project = fsGetProjectById(id);
+  // check fs for project
+  let project: Project | string = await fsGetProjectById(id);
+  if (typeof project === "string") {
+    const ErrorFs: Error = {
+      name: "ErrorFs",
+      message: project,
+    };
+    res.status(500).json(ErrorFs);
+    return;
+  }
+
+  if (!project.id) {
+    const ErrorNotFound: Error = {
+      name: "ErrorNotFound",
+      message: "error: project id was not found",
+    };
+    res.status(404).json(ErrorNotFound);
+    return;
+  }
+
   res.status(200).json(project);
 }
 
-function updateProject(
+async function updateProject(
   req: NextApiRequest,
-  res: NextApiResponse<Project>,
+  res: NextApiResponse<Project | Error>,
   id: string
 ) {
-  let project: Project = {
-    id: id,
-    name: "updateProject",
-    imageUrl: "someUrl",
-    technologies: "html,css,javascript",
-    description: "some description",
-  };
-  res.status(200).json(project);
+  let projectToUpdate = {} as Project;
+
+  // validate and parse projectToUpdate
+  if (!isValid(req.body)) {
+    res.status(400).json(ErrorUpdating);
+    return;
+  }
+  Object.assign(projectToUpdate, req.body);
+
+  // update the project in fs
+  let result: Project | string = await fsUpdateProject(projectToUpdate, id);
+  if (typeof result === "string") {
+    const ErrorFs: Error = {
+      name: "ErrorFs",
+      message: result,
+    };
+    res.status(500).json(ErrorFs);
+    return;
+  }
+
+  res.status(200).json(result);
 }
 
-function deleteProject(
+async function deleteProject(
   req: NextApiRequest,
-  res: NextApiResponse<Project | undefined>,
+  res: NextApiResponse<undefined | Error>,
   id: string
 ) {
-  let project: Project = {
-    id: id,
-    name: "deleteProject",
-    imageUrl: "someUrl",
-    technologies: "html,css,javascript",
-    description: "some description",
-  };
-  res.status(200).json(project);
+  // delete the project in fs
+  let result: undefined | string | Error = await fsDeleteProject(id);
+
+  if (result instanceof Error) {
+    res.status(404).json(result);
+    return;
+  }
+  
+  if (typeof result === "string") {
+    const ErrorFs: Error = {
+      name: "ErrorFs",
+      message: result,
+    };
+    res.status(500).json(ErrorFs);
+    return;
+  }
+
+  res.status(200).json(undefined);
 }
