@@ -121,7 +121,7 @@ async function deleteProject(
     res.status(404).json(result);
     return;
   }
-  
+
   if (typeof result === "string") {
     const ErrorFs: Error = {
       name: "ErrorFs",

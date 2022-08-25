@@ -30,4 +30,3 @@ Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&ut
 - resume & cover letter are hosted on aws s3
 - projects data on firestore
   - POST /api/projects updates firestore
-  
