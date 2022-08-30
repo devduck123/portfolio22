@@ -11,6 +11,7 @@ export default function Card(props: any) {
       <div className="m-4 flex justify-center">
         <Image
           src={props.imageUrl}
+          alt="project UI image"
           width="480"
           height="320"
           className="rounded-md shadow-xl"
